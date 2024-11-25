@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  php:
+    build:
+      context: ../  # Указываем контекст сборки на уровень выше, чтобы указать на весь проект
+      dockerfile: docker/Dockerfile  # Путь к Dockerfile из папки /docker
+    ports:
+      - "9000:9000"  # Прокси на 9000 порт (для вашего PHP-контейнера)
+    volumes:
+      - ../:/var/www/project  # Монтируем всю директорию /project в контейнер
+    depends_on:
+      - postgres  # Контейнер php зависит от контейнера postgres
+
+  postgres:
+    image: postgres:13  # Используем официальный образ PostgreSQL
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: bus_schedule
+    ports:
+      - "5432:5432"  # Прокси на порт PostgreSQL
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d  # Монтируем папку с SQL-скриптами в контейнер
